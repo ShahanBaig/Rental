@@ -3,7 +3,7 @@ import ErrorHandler from "../utils/errorhandler.js";
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import sendToken from "../utils/jwttoken.js";
 import sendEmail from "../utils/sendEmail.js";
-import crypto from "crypto"
+import crypto from "crypto";
 
 export const registerUser = catchAsyncErrors(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -70,7 +70,11 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
   // Prep email
   const resetPasswordUrl =
-    req.protocol + "://" + req.get("host") + "/users/password/reset/" + resetToken;
+    req.protocol +
+    "://" +
+    req.get("host") +
+    "/users/password/reset/" +
+    resetToken;
   const message =
     "Your password reset token is: \n\n" +
     resetPasswordUrl +
@@ -99,23 +103,201 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
 export const resetPassword = catchAsyncErrors(async (req, res, next) => {
   // Hash the token and save to object
-  const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
 
-  const user = await User.findOne({ resetPasswordToken, resetPasswordExpire: { $gt: Date.now() } })
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
 
   if (!user) {
-    return next(new ErrorHandler("Reset password token is invalid or has expired.", 404))
+    return next(
+      new ErrorHandler("Reset password token is invalid or has expired.", 404)
+    );
   }
 
   if (req.body.password !== req.body.confirmPassword) {
-    return next(new ErrorHandler("Passwords do not match.", 400))
+    return next(new ErrorHandler("Passwords do not match.", 400));
   }
 
-  user.password = req.body.password
+  user.password = req.body.password;
   user.resetPasswordToken = undefined;
   user.resetPasswordExpire = undefined;
 
-  await user.save()
+  await user.save();
 
-  sendToken(user, res, 200)
+  sendToken(user, res, 200);
 });
+
+export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+export const updatePassword = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select("+password");
+
+  const isPasswordMatched = user.comparePassword(req.body.oldPassword);
+
+  if (!isPasswordMatched) {
+    return next(new ErrorHandler("Old password is incorrect.", 400));
+  }
+
+  if (req.body.newPassword != req.body.confirmPassword) {
+    return next(new ErrorHandler("Password does not match.", 400));
+  }
+
+  user.password = req.body.newPassword;
+  user.save();
+
+  sendToken(user, res, 200);
+});
+
+export const updateProfile = catchAsyncErrors(async (req, res, next) => {
+  const newUserData = {
+    name: req.body.name,
+    email: req.body.email,
+  };
+
+  // add cloudinary or aws s3 later
+
+  const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  res.status(200).json({
+    success: true,
+  });
+});
+
+// Admin
+export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
+  const users = await User.find();
+
+  res.status(200).json({
+    success: true,
+    users,
+  });
+});
+
+// Admin
+export const getSingleUser = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(
+      new ErrorHandler(`User does not exist with ID ${req.params.id}`, 404)
+    );
+  }
+
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+// Admin
+export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
+  let user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(
+      new ErrorHandler(`User does not exist with ID: ${req.params.id}`, 400)
+    );
+  }
+
+  const newUserData = {
+    name: req.body.name,
+    email: req.body.email,
+    role: req.body.role,
+  };
+
+  user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  res.status(200).json({
+    success: true,
+  });
+});
+
+// Admin
+export const deleteUser = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  // we will remove cloudinary later
+
+  if (!user) {
+    return next(
+      new ErrorHandler(`User does not exist with ID: ${req.params.id}`, 400)
+    );
+  }
+
+  // Delete existing reviews (reviews need their own object)
+
+  await User.findByIdAndDelete(req.params.id);
+
+  res.status(200).json({
+    success: true,
+    message: "User deleted successfully.",
+  });
+});
+
+export const getUserReviews = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.params.userId).populate("reviews");
+
+  if (!user) {
+    return next(
+      new ErrorHandler(`User does not exist with ID: ${req.params.userId}`, 400)
+    );
+  }
+
+  res.status(200).json({
+    success: true,
+    reviews: user.reviews,
+  });
+});
+
+export const getAllReviewsByLoggedInUser = catchAsyncErrors(
+  async (req, res, next) => {
+    const user = await User.findById(req.user._id).populate("reviews");
+
+    if (!user) {
+      return next(
+        new ErrorHandler(`User does not exist with ID: ${req.user._id}`, 400)
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      reviews: user.reviews,
+    });
+  }
+);
+
+export const getAllReviewsOfLoggedInUser = catchAsyncErrors(
+  async (req, res, next) => {
+    const user = await User.findById(req.user._id).populate("reviewed");
+
+    if (!user) {
+      return next(
+        new ErrorHandler(`User does not exist with ID: ${req.user._id}`, 400)
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      reviews: user.reviewed,
+    });
+  }
+);

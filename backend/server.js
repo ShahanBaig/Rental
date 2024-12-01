@@ -9,12 +9,10 @@ import morgan from "morgan"
 import path from "path"
 import { fileURLToPath } from "url"
 import userRoutes from "./routes/users.js";
-import postRoutes from "./routes/posts.js";
 import productRoutes from "./routes/products.js"
-import { createPost } from "./controllers/posts.js";
+import reviewRoutes from "./routes/reviews.js"
 import { isAuthenticatedUser } from "./middleware/auth.js";
 import User from "./models/User.js";
-import Post from "./models/Post.js";
 import errorMiddleware from "./middleware/error.js"
 import { connectDatabase } from "./config/database.js"
 import { ServerResponse } from "http"
@@ -62,9 +60,9 @@ app.use(cors());
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 /* ROUTES */
-app.use("/users", userRoutes);
-app.use("/posts", postRoutes);
-app.use("/products", productRoutes);
+app.use("/api/v1", productRoutes);
+app.use("/api/v1", userRoutes);
+app.use("/api/v1", reviewRoutes);
 
 app.use(errorMiddleware)
 

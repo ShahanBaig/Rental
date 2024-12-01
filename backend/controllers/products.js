@@ -3,7 +3,6 @@ import Product from "../models/Product.js";
 import ApiFeatures from "../utils/apifeatures.js";
 import ErrorHandler from "../utils/errorhandler.js";
 
-// Admin
 export const createProduct = catchAsyncErrors(async (req, res, next) => {
   const product = await Product.create({ ...req.body, ...{user: req.user._id} });
 
@@ -14,6 +13,8 @@ export const createProduct = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const getAllProducts = catchAsyncErrors(async (req, res, next) => {
+  // Perhaps add text indexing?
+
   const resultsPerPage = 5;
   const productCount = await Product.countDocuments();
 
@@ -30,7 +31,6 @@ export const getAllProducts = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// Admin
 export const updateProduct = catchAsyncErrors(async (req, res, next) => {
   let product = await Product.findById(req.params.id);
 
@@ -38,7 +38,6 @@ export const updateProduct = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Product not found.", 404));
   }
 
-  // product user id !== user id
   if (product.user.toString() !== req.user._id.toString()) {
     return next(new ErrorHandler("Logged in user is not allowed to make changes to the resource.", 403));
   }
@@ -62,7 +61,6 @@ export const deleteProduct = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Product not found.", 404));
   }
 
-  // product user id !== user id
   if (product.user.toString() !== req.user._id.toString()) {
     return next(new ErrorHandler("Logged in user is not allowed to make changes to the resource.", 403));
   }

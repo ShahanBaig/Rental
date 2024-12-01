@@ -4,14 +4,26 @@ import {
   getAllProducts,
   updateProduct,
   deleteProduct,
-  getProductDetails
+  getProductDetails,
 } from "../controllers/products.js";
-import { isAuthenticatedUser } from "../middleware/auth.js";
+import { isAuthenticatedUser, authorizeRoles } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.route('/').get(getAllProducts)
-router.route('/new').post(isAuthenticatedUser, createProduct)
-router.route('/:id').put(isAuthenticatedUser, updateProduct).delete(isAuthenticatedUser, deleteProduct).get(getProductDetails)
+// Routes
+router.route("/products").get(getAllProducts);
+
+router
+  .route("/product/new")
+  .post(isAuthenticatedUser, createProduct);
+
+router
+  .route("/product/:id")
+  .put(isAuthenticatedUser, updateProduct)
+  .delete(isAuthenticatedUser, deleteProduct)
+
+router.route("/product/:id").get(getProductDetails);
+
+// Admin routes
 
 export default router;
