@@ -8,6 +8,7 @@ import {
   getUserDetails,
   updatePassword,
   updateProfile,
+  addPaymentMethod,
   getAllUsers,
   getSingleUser,
   updateUserRole,
@@ -29,6 +30,8 @@ router.route("/password/reset/:token").put(resetPassword);
 router.route("/password/update").put(isAuthenticatedUser, updatePassword);
 router.route("/me").get(isAuthenticatedUser, getUserDetails);
 router.route("/me/update").put(isAuthenticatedUser, updateProfile);
+router.route("/me/update/payment-method").put(isAuthenticatedUser, addPaymentMethod);
+
 
 router.route("/users/:id/reviews").get(getUserReviews);
 router.route("/me/reviews/my-reviews").get(isAuthenticatedUser, getAllReviewsByLoggedInUser);

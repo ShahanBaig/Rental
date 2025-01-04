@@ -15,6 +15,17 @@ const productSchema = new mongoose.Schema({
     required: [true, "Please enter a price."],
     maxLength: [8, "Price cannot exceed 8 figures."],
   },
+  securityDepositAmount: {
+    type: Number,
+    required: [true, "Please enter a security deposit."],
+    maxLength: [8, "Security deposit cannot exceed 8 figures."],
+  },
+  cooldownPeriodInHours: {
+  type: Number,
+  required: true,
+  min: [1, "Cooldown period must be at least 1 hour."],
+  max: [48, "Cooldown period cannot exceed 48 hours."],
+},
   images: [
     {
       public_id: {

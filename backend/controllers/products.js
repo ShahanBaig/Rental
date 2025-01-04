@@ -6,6 +6,11 @@ import ErrorHandler from "../utils/errorhandler.js";
 export const createProduct = catchAsyncErrors(async (req, res, next) => {
   const product = await Product.create({ ...req.body, ...{user: req.user._id} });
 
+  req.user.products.posted.push(product._id)
+  req.user.products.total = req.user.products.posted.length
+
+  await req.user.save()
+
   res.status(201).json({
     success: true,
     product,
@@ -66,6 +71,11 @@ export const deleteProduct = catchAsyncErrors(async (req, res, next) => {
   }
 
   await Product.deleteOne({ _id: req.params.id });
+
+  req.user.products.posted.pull(product._id)
+  req.user.products.total = req.user.products.posted.length
+
+  await req.user.save()
 
   res.status(200).json({
     success: true,

@@ -11,6 +11,8 @@ import { fileURLToPath } from "url"
 import userRoutes from "./routes/users.js";
 import productRoutes from "./routes/products.js"
 import reviewRoutes from "./routes/reviews.js"
+import rentalRoutes from "./routes/rentals.js"
+import paymentRoutes from "./routes/payments.js"
 import { isAuthenticatedUser } from "./middleware/auth.js";
 import User from "./models/User.js";
 import errorMiddleware from "./middleware/error.js"
@@ -63,6 +65,8 @@ app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use("/api/v1", productRoutes);
 app.use("/api/v1", userRoutes);
 app.use("/api/v1", reviewRoutes);
+app.use("/api/v1", rentalRoutes);
+app.use("/api/v1", paymentRoutes);
 
 app.use(errorMiddleware)
 

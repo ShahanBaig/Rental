@@ -179,6 +179,46 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+export const addPaymentMethod = catchAsyncErrors(async (req, res, next) => {
+  const {
+    lastFourDigits,
+    cardBrand,
+    expirationDate,
+    cardHolderName,
+    isDefault,
+  } = req.body;
+
+  if (
+    lastFourDigits === undefined ||
+    cardBrand === undefined ||
+    expirationDate === undefined||
+    cardHolderName === undefined
+  ) {
+    throw new Error("All fields must be provided for the update.");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      "banking.lastFourDigits": lastFourDigits,
+      "banking.cardBrand": cardBrand,
+      "banking.expirationDate": expirationDate,
+      "banking.cardHolderName": cardHolderName,
+      "banking.isDefault": isDefault
+    },
+    {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    }
+  );
+
+  res.status(200).json({
+    success: true,
+    paymentMethod: user.banking,
+  });
+});
+
 // Admin
 export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
   const users = await User.find();
@@ -243,7 +283,9 @@ export const deleteUser = catchAsyncErrors(async (req, res, next) => {
     );
   }
 
+  // Make sure we delete all lingering data
   // Delete existing reviews (reviews need their own object)
+  // Delete existing posted products from db
 
   await User.findByIdAndDelete(req.params.id);
 
