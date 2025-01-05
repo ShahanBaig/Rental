@@ -1,10 +1,7 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import Payment from "../models/Payment.js";
-import ApiFeatures from "../utils/apifeatures.js";
-import ErrorHandler from "../utils/errorhandler.js";
 import stripePayment from "stripe";
 
-const stripe = stripePayment(process.env.STRIPE_SECRET_KEY);
+// const stripe = stripePayment(process.env.STRIPE_SECRET_KEY);
 
 export const processPayment = catchAsyncErrors(async (req, res, next) => {
   const myPayment = await stripe.paymentIntents.create({
