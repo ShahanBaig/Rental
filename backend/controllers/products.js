@@ -3,6 +3,26 @@ import Product from "../models/Product.js";
 import ApiFeatures from "../utils/apifeatures.js";
 import ErrorHandler from "../utils/errorhandler.js";
 
+export const getProducts = catchAsyncErrors(async (req, res, next) => {
+  // Perhaps add text indexing?
+
+  const resultsPerPage = 8;
+
+  const apifeature = new ApiFeatures(Product.find(), req.query)
+    .search()
+    .filter()
+    .pagination(resultsPerPage);
+  const products = await apifeature.query;
+  const productCount = Object.keys(products).length
+
+  res.status(200).json({
+    success: true,
+    message: "Retrieved products.",
+    products,
+    productCount,
+  });
+});
+
 export const createProduct = catchAsyncErrors(async (req, res, next) => {
   const product = await Product.create({ ...req.body, ...{user: req.user._id} });
 
@@ -13,26 +33,8 @@ export const createProduct = catchAsyncErrors(async (req, res, next) => {
 
   res.status(201).json({
     success: true,
+    message: "Product created.",
     product,
-  });
-});
-
-export const getAllProducts = catchAsyncErrors(async (req, res, next) => {
-  // Perhaps add text indexing?
-
-  const resultsPerPage = 5;
-  const productCount = await Product.countDocuments();
-
-  const apifeature = new ApiFeatures(Product.find(), req.query)
-    .search()
-    .filter()
-    .pagination(resultsPerPage);
-  const products = await apifeature.query;
-
-  res.status(200).json({
-    success: true,
-    products,
-    productCount,
   });
 });
 
@@ -55,6 +57,7 @@ export const updateProduct = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: "Product updated.",
     product,
   });
 });
@@ -92,6 +95,7 @@ export const getProductDetails = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: "Retrieved product.",
     product,
   });
 });

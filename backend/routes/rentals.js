@@ -8,9 +8,9 @@ import {
   // updatePictures,
   // updateDispute,
   getAllRentals,
-  deleteRentalWithId,
-  myRentalRequestsForOthersPorducts,
-  rentalRequestsForMyProducts,
+  deleteRental,
+  externalRentals,
+  internalRentals,
   cancelRental,
 } from "../controllers/rentals.js";
 import { isAuthenticatedUser, authorizeRoles } from "../middleware/auth.js";
@@ -27,12 +27,12 @@ router.route("/rentals/:id/reschedule/confirm").put(isAuthenticatedUser, confirm
 router.route("/rentals/:id/cancel").put(isAuthenticatedUser, cancelRental);
 
 router.route("/rentals/:id").get(isAuthenticatedUser, getRentalDetails)
-router.route("/rentals/me/requests/external").get(isAuthenticatedUser, myRentalRequestsForOthersPorducts);
-router.route("/rentals/me/requests/internal").get(isAuthenticatedUser, rentalRequestsForMyProducts);
+router.route("/rentals/me/requests/external").get(isAuthenticatedUser, externalRentals);
+router.route("/rentals/me/requests/internal").get(isAuthenticatedUser, internalRentals);
 
 // Admin routes
 router.route("/admin/rentals").get(isAuthenticatedUser, authorizeRoles("admin"), getAllRentals);
-router.route("/admin/rentals/:id").delete(isAuthenticatedUser, authorizeRoles("admin"), deleteRentalWithId)
+router.route("/admin/rentals/:id").delete(isAuthenticatedUser, authorizeRoles("admin"), deleteRental)
 
 // router.route("/rentals/:id/update/pictures").put(isAuthenticatedUser, updatePictures)
 // router.route("/rentals/:id/update/dispute").put(isAuthenticatedUser, updateDispute)

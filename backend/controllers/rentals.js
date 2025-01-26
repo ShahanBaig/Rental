@@ -480,23 +480,7 @@ export const cancelRental = catchAsyncErrors(async (req, res, next) => {
 });
 
 // Reads
-export const getRentalDetails = catchAsyncErrors(async (req, res, next) => {
-  let rental = await Rental.findById(req.params.id).populate(
-    "renterId",
-    "name email"
-  );
-
-  if (!rental) {
-    return next(new ErrorHandler("Rental request not found.", 404));
-  }
-
-  res.status(200).json({
-    success: true,
-    rental,
-  });
-});
-
-export const myRentalRequestsForOthersPorducts = catchAsyncErrors(
+export const externalRentals = catchAsyncErrors(
   async (req, res, next) => {
     let rentals = await Rental.find({ renterId: req.user._id }).populate(
       "productId"
@@ -508,12 +492,13 @@ export const myRentalRequestsForOthersPorducts = catchAsyncErrors(
 
     res.status(200).json({
       success: true,
+      message: "Retrieved rental requests created by you.",
       rentals,
     });
   }
 );
 
-export const rentalRequestsForMyProducts = catchAsyncErrors(
+export const internalRentals = catchAsyncErrors(
   async (req, res, next) => {
     let rentals = await Rental.find({ lenderId: req.user._id }).populate(
       "productId"
@@ -527,10 +512,28 @@ export const rentalRequestsForMyProducts = catchAsyncErrors(
 
     res.status(200).json({
       success: true,
+      message: "Retrieved rental requests for your products.",
       rentals,
     });
   }
 );
+
+export const getRentalDetails = catchAsyncErrors(async (req, res, next) => {
+  let rental = await Rental.findById(req.params.id).populate(
+    "renterId",
+    "name email"
+  );
+
+  if (!rental) {
+    return next(new ErrorHandler("Rental request not found.", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Retrieved rental details.",
+    rental,
+  });
+});
 
 // Admin routes
 export const getAllRentals = catchAsyncErrors(async (req, res, next) => {
@@ -538,11 +541,12 @@ export const getAllRentals = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: "Retrieved all rentals.",
     rentals,
   });
 });
 
-export const deleteRentalWithId = catchAsyncErrors(async (req, res, next) => {
+export const deleteRental = catchAsyncErrors(async (req, res, next) => {
   // Find rental
   let rental = await Rental.findById(req.params.id);
 

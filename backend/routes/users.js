@@ -1,16 +1,16 @@
 import express from "express";
 import {
   forgotPassword,
-  loginUser,
+  login,
   logout,
-  registerUser,
+  register,
   resetPassword,
-  getUserDetails,
+  getLoggedInUserDetails,
   updatePassword,
-  updateProfile,
-  addPaymentMethod,
+  updateAccount,
+  updatePaymentInformation,
   getAllUsers,
-  getSingleUser,
+  getUser,
   updateUserRole,
   deleteUser,
   getUserReviews,
@@ -22,15 +22,15 @@ import { isAuthenticatedUser, authorizeRoles } from "../middleware/auth.js";
 const router = express.Router();
 
 // Routes
-router.route("/register").post(registerUser);
-router.route("/login").post(loginUser);
+router.route("/register").post(register);
+router.route("/login").post(login);
 router.route("/logout").post(logout);
 router.route("/password/forgot").post(forgotPassword);
 router.route("/password/reset/:token").put(resetPassword);
 router.route("/password/update").put(isAuthenticatedUser, updatePassword);
-router.route("/me").get(isAuthenticatedUser, getUserDetails);
-router.route("/me/update").put(isAuthenticatedUser, updateProfile);
-router.route("/me/update/payment-method").put(isAuthenticatedUser, addPaymentMethod);
+router.route("/me").get(isAuthenticatedUser, getLoggedInUserDetails);
+router.route("/me/update").put(isAuthenticatedUser, updateAccount);
+router.route("/me/update/payment-method").put(isAuthenticatedUser, updatePaymentInformation);
 
 
 router.route("/users/:id/reviews").get(getUserReviews);
@@ -40,7 +40,7 @@ router.route("/me/reviews/recieved").get(isAuthenticatedUser, getAllReviewsOfLog
 // Admin routes
 router.route("/admin/users").get(isAuthenticatedUser, authorizeRoles("admin"), getAllUsers);
 router.route("/admin/user/:id")
-  .get(isAuthenticatedUser, authorizeRoles("admin"), getSingleUser)
+  .get(isAuthenticatedUser, authorizeRoles("admin"), getUser)
   .put(isAuthenticatedUser, authorizeRoles("admin"), updateUserRole)
   .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteUser);
 

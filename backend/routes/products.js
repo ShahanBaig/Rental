@@ -1,7 +1,7 @@
 import express from "express";
 import {
   createProduct,
-  getAllProducts,
+  getProducts,
   updateProduct,
   deleteProduct,
   getProductDetails,
@@ -11,7 +11,7 @@ import { isAuthenticatedUser, authorizeRoles } from "../middleware/auth.js";
 const router = express.Router();
 
 // Routes
-router.route("/products").get(getAllProducts);
+router.route("/products").get(getProducts);
 
 router
   .route("/product/new")

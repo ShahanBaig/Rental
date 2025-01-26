@@ -1,0 +1,32 @@
+# Exclude dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Exclude environment and secrets
+.env
+*.env
+
+# Exclude logs and temporary files
+logs
+*.log
+*.tmp
+
+# Exclude version control and metadata
+.git
+.gitignore
+
+# Exclude Docker files themselves
+Dockerfile
+.dockerignore
+
+# Exclude system files
+.DS_Store
+Thumbs.db
+
+# Exclude IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.sublime-project
+*.sublime-workspace

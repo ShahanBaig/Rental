@@ -5,7 +5,7 @@ import sendToken from "../utils/jwttoken.js";
 import sendEmail from "../utils/sendEmail.js";
 import crypto from "crypto";
 
-export const registerUser = catchAsyncErrors(async (req, res, next) => {
+export const register = catchAsyncErrors(async (req, res, next) => {
   const { name, email, password } = req.body;
   const user = await User.create({
     name,
@@ -17,10 +17,10 @@ export const registerUser = catchAsyncErrors(async (req, res, next) => {
     },
   });
 
-  sendToken(user, res, 201);
+  sendToken(user, res, 201, "Registration successful.");
 });
 
-export const loginUser = catchAsyncErrors(async (req, res, next) => {
+export const login = catchAsyncErrors(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -41,7 +41,7 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Invalid email or password.", 401));
   }
 
-  sendToken(user, res, 200);
+  sendToken(user, res, 200, "Logged in.");
 });
 
 export const logout = catchAsyncErrors(function (req, res, next) {
@@ -129,16 +129,7 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
   await user.save();
 
-  sendToken(user, res, 200);
-});
-
-export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
-
-  res.status(200).json({
-    success: true,
-    user,
-  });
+  sendToken(user, res, 200, "Password resetted.");
 });
 
 export const updatePassword = catchAsyncErrors(async (req, res, next) => {
@@ -157,10 +148,20 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
   user.password = req.body.newPassword;
   user.save();
 
-  sendToken(user, res, 200);
+  sendToken(user, res, 200, "Password Updated.");
 });
 
-export const updateProfile = catchAsyncErrors(async (req, res, next) => {
+export const getLoggedInUserDetails = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  res.status(200).json({
+    success: true,
+    message: "Retrieved user.",
+    user,
+  });
+});
+
+export const updateAccount = catchAsyncErrors(async (req, res, next) => {
   const newUserData = {
     name: req.body.name,
     email: req.body.email,
@@ -176,10 +177,12 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: "Account updated.",
+    user
   });
 });
 
-export const addPaymentMethod = catchAsyncErrors(async (req, res, next) => {
+export const updatePaymentInformation = catchAsyncErrors(async (req, res, next) => {
   const {
     lastFourDigits,
     cardBrand,
@@ -215,33 +218,8 @@ export const addPaymentMethod = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    paymentMethod: user.banking,
-  });
-});
-
-// Admin
-export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
-  const users = await User.find();
-
-  res.status(200).json({
-    success: true,
-    users,
-  });
-});
-
-// Admin
-export const getSingleUser = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-
-  if (!user) {
-    return next(
-      new ErrorHandler(`User does not exist with ID ${req.params.id}`, 404)
-    );
-  }
-
-  res.status(200).json({
-    success: true,
-    user,
+    message: "Payment information updated.",
+    user
   });
 });
 
@@ -256,8 +234,6 @@ export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
   }
 
   const newUserData = {
-    name: req.body.name,
-    email: req.body.email,
     role: req.body.role,
   };
 
@@ -269,6 +245,35 @@ export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: "User role updated.",
+  });
+});
+
+// Admin
+export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
+  const users = await User.find();
+
+  res.status(200).json({
+    success: true,
+    message: "Retrieved all users.",
+    users,
+  });
+});
+
+// Admin
+export const getUser = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(
+      new ErrorHandler(`User does not exist with ID ${req.params.id}`, 404)
+    );
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Retrieved user.",
+    user,
   });
 });
 
@@ -291,7 +296,7 @@ export const deleteUser = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "User deleted successfully.",
+    message: "User deleted.",
   });
 });
 
@@ -306,6 +311,7 @@ export const getUserReviews = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: "Retrieved reviews.",
     reviews: user.reviews,
   });
 });
@@ -322,6 +328,7 @@ export const getAllReviewsByLoggedInUser = catchAsyncErrors(
 
     res.status(200).json({
       success: true,
+      message: "Retrieved reviews.",
       reviews: user.reviews,
     });
   }
@@ -339,6 +346,7 @@ export const getAllReviewsOfLoggedInUser = catchAsyncErrors(
 
     res.status(200).json({
       success: true,
+      message: "Retrieved reviews.",
       reviews: user.reviewed,
     });
   }

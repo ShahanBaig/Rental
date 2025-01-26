@@ -33,7 +33,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load environment variables from a file named .env into process.env.
-dotenv.config({path: "backend/config/.env"});
+dotenv.config({path: ".env"});
 
 // Create an instance of the Express application.
 const app = express();
