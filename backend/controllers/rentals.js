@@ -4,8 +4,6 @@ import ErrorHandler from "../utils/errorhandler.js";
 import Product from "../models/Product.js";
 import moment from "moment";
 
-// Move some of the validations as middleware functions
-
 // Create rental request
 export const createRental = catchAsyncErrors(async (req, res, next) => {
   // Body
