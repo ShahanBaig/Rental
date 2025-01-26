@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 import ErrorHandler from "../utils/errorhandler.js";
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import sendToken from "../utils/jwttoken.js";
+import sendToken from "../utils/jwtToken.js";
 import sendEmail from "../utils/sendEmail.js";
 import crypto from "crypto";
 

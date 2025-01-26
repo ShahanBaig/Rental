@@ -10,13 +10,7 @@ jobs:
   build:
     runs-on: self-hosted
 
-    steps:   
-    # - name: Login Dockerhub
-    #   env: 
-    #     DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-    #     DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-    #   run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-    
+    steps:
     - name: Pull Docker image from Dockerhub
       run: sudo docker pull shahanb/backend:latest
 
