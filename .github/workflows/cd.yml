@@ -4,18 +4,54 @@ on:
   workflow_run:
     workflows: ["CI Pipeline"]
     types:
-        - completed
+      - completed
 
 jobs:
   build:
     runs-on: self-hosted
 
     steps:
-    - name: Pull Docker image from Dockerhub
-      run: sudo docker pull shahanb/backend:latest
+      - name: Check if the CI Pipeline was successful
+        if: ${{ github.event.workflow_run.conclusion != 'success' }}
+        run: |
+          echo "CI pipeline failed. Stopping the CD pipeline."
+          exit 1
 
-    - name: Delete old Docker container
-      run: sudo docker rm -f backend-container || true
+      - name: Create .env file
+        run: |
+          echo "NODE_ENV=$NODE_ENV" >> .env
+          echo "MONGO_URL=$MONGO_URL" >> .env
+          echo "PORT=$PORT" >> .env
+          echo "JWT_SECRET=$JWT_SECRET" >> .env
+          echo "JWT_EXPIRE=$JWT_EXPIRE" >> .env
+          echo "COOKIE_EXPIRE=$COOKIE_EXPIRE" >> .env
+          echo "SMTP_SERVICE=$SMTP_SERVICE" >> .env
+          echo "SMTP_MAIL=$SMTP_MAIL" >> .env
+          echo "SMTP_PASSWORD=$SMTP_PASSWORD" >> .env
+          echo "SMTP_HOST=$SMTP_HOST" >> .env
+          echo "SMTP_PORT=$SMTP_PORT" >> .env
+          echo "STRIPE_API_KEY=$STRIPE_API_KEY" >> .env
+          echo "STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY" >> .env
+        env:
+          NODE_ENV: ${{ secrets.NODE_ENV }}
+          MONGO_URL: ${{ secrets.MONGO_URL }}
+          PORT: ${{ secrets.PORT }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRE: ${{ secrets.JWT_EXPIRE }}
+          COOKIE_EXPIRE: ${{ secrets.COOKIE_EXPIRE }}
+          SMTP_SERVICE: ${{ secrets.SMTP_SERVICE }}
+          SMTP_MAIL: ${{ secrets.SMTP_MAIL }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
-    - name: Run Docker container
-      run: sudo docker run -d -p 3001:3001 --name backend-container shahanb/backend
+      - name: Pull Docker image from Dockerhub
+        run: sudo docker pull shahanb/backend:latest
+
+      - name: Delete old Docker container
+        run: sudo docker rm -f backend-container || true
+
+      - name: Run Docker container
+        run: sudo docker run --env-file .env -d --restart unless-stopped -p 3001:3001 --name backend-container shahanb/backend

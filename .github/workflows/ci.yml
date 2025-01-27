@@ -2,27 +2,27 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
     paths:
-      - "backend/**"  # Only run this workflow when files in the backend directory change
+      - "backend/**" # Only run this workflow when files in the backend directory change
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Login Dockerhub
-      env: 
-        DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-      run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-      
-    - name: Build the Docker image
-      run: docker build --file backend/Dockerfile --tag shahanb/backend:latest --tag shahanb/backend:${{ github.sha }} backend/
+      - uses: actions/checkout@v4
 
-    - name: Push to Dockerhub
-      run: |
-        docker push shahanb/backend:latest
-        docker push shahanb/backend:${{ github.sha }}
+      - name: Login Dockerhub
+        env:
+          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
+      - name: Build the Docker image
+        run: docker build --file backend/Dockerfile --tag shahanb/backend:latest --tag shahanb/backend:${{ github.sha }} backend/
+
+      - name: Push to Dockerhub
+        run: |
+          docker push shahanb/backend:latest
+          docker push shahanb/backend:${{ github.sha }}
