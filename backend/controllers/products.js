@@ -19,7 +19,7 @@ export const getProducts = catchAsyncErrors(async (req, res, next) => {
     success: true,
     message: "Retrieved products.",
     products,
-    productCount,
+    // productCount,
   });
 });
 

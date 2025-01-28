@@ -77,10 +77,6 @@ connectDatabase()
 const PORT = process.env.PORT || 6001;
 const server = app.listen(PORT, () => console.log(`Server listening on port: ${PORT}`));
 
-/* ADD DATA ONE TIME */
-// User.insertMany(users);
-// Post.insertMany(posts);
-
 /* UNHANDLED PROMISE REJECTION */
 process.on("unhandledRejection", (err) => {
     console.log('Error: ' + err.message)
