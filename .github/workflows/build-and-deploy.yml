@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUCKET: www.rental.ca
-      DIST: build
+      DIST: dist
       REGION: us-east-2
 
     steps:
