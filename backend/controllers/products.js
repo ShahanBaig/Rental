@@ -4,7 +4,7 @@ import ApiFeatures from "../utils/apifeatures.js";
 import ErrorHandler from "../utils/errorhandler.js";
 
 export const getProducts = catchAsyncErrors(async (req, res, next) => {
-  // Perhaps add text indexing?
+  // Perhaps add text indexing ?
 
   const resultsPerPage = 8;
 

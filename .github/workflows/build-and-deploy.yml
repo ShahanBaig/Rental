@@ -1,0 +1,52 @@
+name: Build and deploy react app to S3
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "frontend/**" # Only run this workflow when files in the frontend directory change
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    env:
+      BUCKET: www.rental.ca
+      DIST: build
+      REGION: us-east-2
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure CLI & AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: |
+          node --version
+          npm ci
+
+      - name: Inject Environment Variables
+        working-directory: frontend
+        run: |
+          echo "VITE_NODE_ENV=${{ secrets.VITE_NODE_ENV }}" >> .env
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env
+
+      - name: Build static website
+        working-directory: frontend
+        run: npm run build
+
+      - name: Copy files to S3 bucket with the AWS cli
+        run: aws s3 sync --delete frontend/${{ env.DIST }} s3://${{ env.BUCKET }}
+
+    #   - name: Invalidate the Cache
+    #     run: |
+    #         aws cloudfront create-invalidation \
+    #         --distribution-id ${{ env.DIST_ID }} \
+    #         --path "/*"
