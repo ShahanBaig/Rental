@@ -43,7 +43,8 @@ jobs:
         run: npm run build
 
       - name: Copy files to S3 bucket with the AWS cli
-        run: aws s3 sync --delete frontend/${{ env.DIST }} s3://${{ env.BUCKET }}
+        working-directory: frontend
+        run: aws s3 sync --delete ./${{ env.DIST }} s3://${{ env.BUCKET }}
 
     #   - name: Invalidate the Cache
     #     run: |

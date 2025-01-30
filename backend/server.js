@@ -58,7 +58,7 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 // Enables Cross-Origin HTTP requests.
 app.use(cors());
 
-// Serve static public files.
+// Serve static public files. 
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 /* ROUTES */
