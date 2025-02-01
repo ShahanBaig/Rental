@@ -31,14 +31,14 @@ function App() {
   const [stripeApiKey, setStripeApiKey] = useState("");
 
   async function getStripeApiKey() {
-    const { data } = await axios.get("/api/v1//stripe-api-key");
+    const { data } = await axios.get("/api/v1/stripe-api-key");
     setStripeApiKey(data.stripeApiKey);
   }
 
   // useEffect(() => {
   //   dispatch(getLoggedInUserDetails());
   //   getStripeApiKey();
-  // }, [dispatch]);
+  // }, [dispatch, getStripeApiKey]);
 
   return (
     <div className="app">
@@ -61,7 +61,7 @@ function App() {
             {/* <ProtectedRoute path="/me" element={<MyDashboardPage />} />
             <ProtectedRoute path="/password/update" element={<UpdatePasswordPage />} /> */}
             <Route path="/me" element={<ProtectedRoute element={<MyDashboardPage />} />}/>
-            <Route path="/me" element={<ProtectedRoute element={<UpdatePasswordPage />} />}/>
+            <Route path="/me/update-password" element={<ProtectedRoute element={<UpdatePasswordPage />} />}/>
 
           </Routes>
         </ThemeProvider>

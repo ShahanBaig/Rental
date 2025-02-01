@@ -68,7 +68,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
   const resetToken = user.getResetPasswordToken();
   await user.save({ validateBeforeSave: false });
 
-  // Prep email
+  // Prep email 
   const resetPasswordUrl =
     req.protocol +
     "://" +
