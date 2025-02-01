@@ -4,7 +4,7 @@ on:
   push:
     branches: ["main"]
     paths:
-      - "frontend/**" # Only run this workflow when files in the frontend directory change
+      - "frontend/**"
 
 jobs:
   build-and-deploy:
@@ -32,22 +32,12 @@ jobs:
           node --version
           npm ci
 
-    #   - name: Inject Environment Variables
-    #     working-directory: frontend
-    #     run: |
-    #       echo "VITE_NODE_ENV=${{ secrets.VITE_NODE_ENV }}" >> .env
-    #       echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env
-
       - name: Inject Environment Variables
         working-directory: frontend
         run: |
             touch .env
             echo "VITE_NODE_ENV=${{ secrets.VITE_NODE_ENV }}" >> .env
             echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env
-            cat .env  # Debugging, can be removed
-
-      - name: Debug Secrets (Temporarily)
-        run: echo "VITE_API_URL=${{ secrets.VITE_API_URL }}_END"
           
       - name: Build static website
         working-directory: frontend

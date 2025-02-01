@@ -4,7 +4,7 @@ on:
   push:
     branches: ["main"]
     paths:
-      - "backend/**" # Only run this workflow when files in the backend directory change
+      - "backend/**"
 
 jobs:
   build:
