@@ -32,11 +32,19 @@ jobs:
           node --version
           npm ci
 
+    #   - name: Inject Environment Variables
+    #     working-directory: frontend
+    #     run: |
+    #       echo "VITE_NODE_ENV=${{ secrets.VITE_NODE_ENV }}" >> .env
+    #       echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env
+
       - name: Inject Environment Variables
         working-directory: frontend
         run: |
-          echo "VITE_NODE_ENV=${{ secrets.VITE_NODE_ENV }}" >> .env
-          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env
+            touch .env
+            echo "VITE_NODE_ENV=${{ secrets.VITE_NODE_ENV }}" >> .env
+            echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env
+            cat .env  # Debugging, can be removed
 
       - name: Build static website
         working-directory: frontend
