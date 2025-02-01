@@ -79,7 +79,7 @@ export const login = (email, password) => async (dispatch) => {
     const config = { headers: { "Content-Type": "application/json" } };
 
     const { data } = await axios.post(
-      'http://3.22.65.1/api/v1/login',
+      `${apiUrl}/api/v1/login`,
       { email, password },
       config
     );
