@@ -46,6 +46,9 @@ jobs:
             echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env
             cat .env  # Debugging, can be removed
 
+      - name: Debug Secrets (Temporarily)
+        run: echo "VITE_API_URL=${{ secrets.VITE_API_URL }}"
+          
       - name: Build static website
         working-directory: frontend
         run: npm run build
