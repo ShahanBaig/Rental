@@ -80,7 +80,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     resetPasswordUrl +
     "\n\nIf you did not request this email, please ignore this.";
 
-  // Send email
+  // Send email 
   try {
     await sendEmail({
       email: user.email,
